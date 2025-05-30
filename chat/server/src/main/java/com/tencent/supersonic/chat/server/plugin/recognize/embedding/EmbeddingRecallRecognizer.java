@@ -31,33 +31,34 @@ public class EmbeddingRecallRecognizer extends PluginRecognizer {
 
     public PluginRecallResult recallPlugin(ParseContext parseContext) {
         String text = parseContext.getRequest().getQueryText();
-        List<Retrieval> embeddingRetrievals = embeddingRecall(text);
-        if (CollectionUtils.isEmpty(embeddingRetrievals)) {
-            return null;
-        }
+//        List<Retrieval> embeddingRetrievals = embeddingRecall(text);
+//        if (CollectionUtils.isEmpty(embeddingRetrievals)) {
+//            return null;
+//        }
         List<ChatPlugin> plugins = getPluginList(parseContext);
-        Map<Long, ChatPlugin> pluginMap =
-                plugins.stream().collect(Collectors.toMap(ChatPlugin::getId, p -> p));
-        for (Retrieval embeddingRetrieval : embeddingRetrievals) {
-            ChatPlugin plugin = pluginMap.get(Long.parseLong(embeddingRetrieval.getId()));
-            if (plugin == null) {
-                continue;
-            }
-            Pair<Boolean, Set<Long>> pair = PluginManager.resolve(plugin, parseContext);
-            log.info("embedding plugin resolve: {}", pair);
-            if (pair.getLeft()) {
-                Set<Long> dataSetList = pair.getRight();
-                if (CollectionUtils.isEmpty(dataSetList)) {
-                    continue;
-                }
-                plugin.setParseMode(ParseMode.EMBEDDING_RECALL);
-                double similarity = embeddingRetrieval.getSimilarity();
-                double score = parseContext.getRequest().getQueryText().length() * similarity;
-                return PluginRecallResult.builder().plugin(plugin).dataSetIds(dataSetList)
-                        .score(score).distance(similarity).build();
-            }
-        }
-        return null;
+//        Map<Long, ChatPlugin> pluginMap =
+//                plugins.stream().collect(Collectors.toMap(ChatPlugin::getId, p -> p));
+//        for (Retrieval embeddingRetrieval : embeddingRetrievals) {
+//            ChatPlugin plugin = pluginMap.get(Long.parseLong(embeddingRetrieval.getId()));
+//            if (plugin == null) {
+//                continue;
+//            }
+//            Pair<Boolean, Set<Long>> pair = PluginManager.resolve(plugin, parseContext);
+//            log.info("embedding plugin resolve: {}", pair);
+//            if (pair.getLeft()) {
+//                Set<Long> dataSetList = pair.getRight();
+//                if (CollectionUtils.isEmpty(dataSetList)) {
+//                    continue;
+//                }
+//                plugin.setParseMode(ParseMode.EMBEDDING_RECALL);
+//                double similarity = embeddingRetrieval.getSimilarity();
+//                double score = parseContext.getRequest().getQueryText().length() * similarity;
+//                return PluginRecallResult.builder().plugin(plugin).dataSetIds(dataSetList)
+//                        .score(score).distance(similarity).build();
+//            }
+//        }
+        return PluginRecallResult.builder().plugin(plugins.get(0)).dataSetIds(plugins.get(0).getDataSetList().stream().collect(Collectors.toSet())).score(10.0).distance(100.0).build();
+//        return null;
     }
 
     public List<Retrieval> embeddingRecall(String embeddingText) {
