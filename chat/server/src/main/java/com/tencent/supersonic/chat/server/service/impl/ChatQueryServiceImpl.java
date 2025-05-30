@@ -9,6 +9,7 @@ import com.tencent.supersonic.chat.api.pojo.response.QueryResult;
 import com.tencent.supersonic.chat.server.agent.Agent;
 import com.tencent.supersonic.chat.server.executor.ChatQueryExecutor;
 import com.tencent.supersonic.chat.server.parser.ChatQueryParser;
+import com.tencent.supersonic.chat.server.parser.LLMBasedParserSelector;
 import com.tencent.supersonic.chat.server.pojo.ExecuteContext;
 import com.tencent.supersonic.chat.server.pojo.ParseContext;
 import com.tencent.supersonic.chat.server.processor.execute.ExecuteResultProcessor;
@@ -95,11 +96,14 @@ public class ChatQueryServiceImpl implements ChatQueryService {
         }
 
         ParseContext parseContext = buildParseContext(chatParseReq, new ChatParseResp(queryId));
-        for (ChatQueryParser parser : chatQueryParsers) {
-            if (parser.accept(parseContext)) {
-                parser.parse(parseContext);
-            }
-        }
+        LLMBasedParserSelector  llmBasedParserSelector = new LLMBasedParserSelector(chatQueryParsers);
+        llmBasedParserSelector.choose(parseContext);
+//        for (ChatQueryParser parser : chatQueryParsers) {
+//            if (parser.accept(parseContext)) {
+//
+//                parser.parse(parseContext);
+//            }
+//        }
 
         for (ParseResultProcessor processor : parseResultProcessors) {
             if (processor.accept(parseContext)) {
