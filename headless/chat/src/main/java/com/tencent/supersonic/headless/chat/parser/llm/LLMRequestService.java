@@ -38,14 +38,15 @@ public class LLMRequestService {
         LLMReq.LLMSchema llmSchema = new LLMReq.LLMSchema();
         int fieldCntThreshold =
                 Integer.valueOf(parserConfig.getParameterValue(PARSER_FIELDS_COUNT_THRESHOLD));
-        if (queryCtx.getMapInfo().getMatchedElements(dataSetId).size() <= fieldCntThreshold) {
-            llmSchema.setMetrics(queryCtx.getSemanticSchema().getMetrics());
-            llmSchema.setDimensions(queryCtx.getSemanticSchema().getDimensions());
-        } else {
-            llmSchema.setMetrics(getMappedMetrics(queryCtx, dataSetId));
-            llmSchema.setDimensions(getMappedDimensions(queryCtx, dataSetId));
-        }
-
+        // if (queryCtx.getMapInfo().getMatchedElements(dataSetId).size() <= fieldCntThreshold) {
+        //    llmSchema.setMetrics(queryCtx.getSemanticSchema().getMetrics());
+        //    llmSchema.setDimensions(queryCtx.getSemanticSchema().getDimensions());
+        // } else {
+        //    llmSchema.setMetrics(getMappedMetrics(queryCtx, dataSetId));
+        //    llmSchema.setDimensions(getMappedDimensions(queryCtx, dataSetId));
+        // }
+        llmSchema.setMetrics(queryCtx.getSemanticSchema().getMetrics(dataSetId));
+        llmSchema.setDimensions(queryCtx.getSemanticSchema().getDimensions(dataSetId));
         LLMReq llmReq = new LLMReq();
         llmReq.setQueryText(queryText);
         llmReq.setSchema(llmSchema);
